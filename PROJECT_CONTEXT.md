@@ -116,3 +116,68 @@ resources/views/
     ├── registro/
     ├── equipo/
     └── constancias/
+
+
+    **Fecha de Actualización:** 21 de Noviembre, 2025
+**Versión:** 0.5.0 (MVP Funcional - Backend & Lectura de Datos)
+
+---
+
+## 🟢 1. Módulos Completados & Funcionando
+
+### 🛠️ Arquitectura & Base de Datos
+* **Esquema Relacional:** Tablas normalizadas (`users`, `roles`, `equipos`, `proyectos`, etc.) con integridad referencial (`cascade/restrict`).
+* **Corrección de Convenciones:** Solucionado conflicto de pluralización inglés/español en Modelos (`roles` vs `rols`, `perfiles`, `calificaciones`).
+* **Data Seeding:** Generación masiva de datos de prueba coherentes (Usuarios, Jueces, Equipos multidisciplinarios y Calificaciones) usando Factories.
+* **Timestamps en Pivotes:** Habilitado `withTimestamps()` en relaciones muchos-a-muchos (`equipo_participante`).
+
+### 🔐 Seguridad & Autenticación
+* **RoleMiddleware:** Implementado y registrado en `bootstrap/app.php`. Protege rutas `/admin`, `/juez`, `/participante`.
+* **Login Flow:** Redirección automática al dashboard correspondiente según el rol del usuario (`AuthenticatedSessionController`).
+* **Navegación Dinámica:** El componente `navigation.blade.php` (Desktop y Mobile) resuelve la ruta del dashboard dinámicamente según el usuario autenticado.
+
+### 🧠 Lógica de Negocio (Backend)
+* **AdminController:**
+    * Métricas en tiempo real (Conteo de Jueces, Participantes, Equipos).
+    * Listado de eventos activos.
+* **JuezController:**
+    * Listado de proyectos asignados filtrados por evento activo.
+    * Lógica de estado ("Calificado" vs "Pendiente") calculada mediante Eager Loading.
+* **ParticipanteController:**
+    * Detección inteligente de estado: ¿Tiene equipo? ¿Tiene proyecto?
+    * Carga de relaciones anidadas (`participante.equipos.proyecto`).
+* **Modelos:** Definición correcta de relaciones (`hasOne`, `belongsToMany`, `hasMany`) incluyendo correcciones de namespaces.
+
+### 🎨 Frontend (Vistas)
+* **Dashboards Específicos:** Vistas separadas para Admin, Juez y Participante.
+* **UI Reactiva:** Mensajes condicionales (ej. "No tienes equipo" vs "Ver avance").
+
+---
+
+## 🟡 2. En Progreso / Pendiente Inmediato
+
+### Funcionalidades CRUD (Escritura)
+* **Participante:**
+    * Formulario de `/registro-inicial` (para completar carrera y no. control).
+    * Creación de Equipos (Validación de mínimo 2 integrantes y multidisciplinario).
+    * Unirse a un equipo existente.
+* **Admin:**
+    * Gestión de Usuarios (Crear Jueces manualmente).
+    * CRUD de Eventos y Criterios.
+* **Juez:**
+    * Formulario de Evaluación (Guardar calificaciones en BD).
+
+### Reportes
+* **Gráficos:** Implementar Chart.js en los dashboards para visualizar los datos que ya estamos trayendo del backend.
+* **Constancias:** Generación de PDF y QR.
+
+---
+
+## 🔴 3. Errores Conocidos (Bugs)
+* *Ninguno crítico actualmente.* (El sistema compila, migra y navega sin errores 500/404).
+
+---
+
+## 📝 Notas para Desarrolladores/IA
+* Al crear nuevas relaciones N:M, recordar siempre especificar el nombre de la tabla en español en la definición `belongsToMany`.
+* Usar `User::getDashboardRouteName()` para cualquier enlace que dirija al "Home" del usuario.

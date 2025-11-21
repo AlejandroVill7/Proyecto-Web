@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('participante_id')->constrained()->onDelete('cascade');
             $table->foreignId('perfil_id')->constrained('perfiles')->onDelete('cascade');
             $table->primary(['equipo_id', 'participante_id']);
+            $table->timestamps();
         });
     }
 

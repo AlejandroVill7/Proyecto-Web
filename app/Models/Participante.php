@@ -26,11 +26,20 @@ class Participante extends Model
 
     public function equipos()
     {
-        return $this->belongsToMany(Equipo::class, 'equipo_participante')->withPivot('perfil_id');
+        // Relación Muchos a Muchos con Equipos
+        // Especificamos la tabla pivote 'equipo_participante' para evitar errores de nombres
+        return $this->belongsToMany(Equipo::class, 'equipo_participante', 'participante_id', 'equipo_id')
+            ->withPivot('perfil_id') // Para poder acceder al rol dentro del equipo
+            ->withTimestamps();
     }
 
     public function constancias()
     {
         return $this->hasMany(Constancia::class);
+    }
+    public function participante()
+    {
+        // Un Usuario tiene un perfil de Participante
+        return $this->hasOne(Participante::class);
     }
 }

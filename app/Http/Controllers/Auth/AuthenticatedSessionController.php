@@ -28,7 +28,21 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        //Logica login segun roles a escoger
+        $user = $request->user();
+
+        if($user ->roles->contains('nombre', 'Admin')){
+            return redirect()->intended(route('admin.dashboard'));
+        }elseif($user ->roles->contains('nombre', 'Juez')){
+            return redirect()->intended(route('juez.dashboard'));
+        }elseif($user ->roles->contains('nombre', 'Participante')){
+            if(!$user->participante){
+                return redirect()->intended(route('participante.registro.inicial'));
+            }
+            return redirect()->intended(route('participante.dashboard'));
+        }
+
+        return redirect('/');
     }
 
     /**

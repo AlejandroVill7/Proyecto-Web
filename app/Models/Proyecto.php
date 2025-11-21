@@ -33,4 +33,12 @@ class Proyecto extends Model
     {
         return $this->hasMany(Calificacion::class);
     }
+
+    public function participantes()
+    {
+        // Relación inversa Muchos a Muchos
+        return $this->belongsToMany(Participante::class, 'equipo_participante', 'equipo_id', 'participante_id')
+            ->withPivot('perfil_id')
+            ->withTimestamps();
+    }
 }

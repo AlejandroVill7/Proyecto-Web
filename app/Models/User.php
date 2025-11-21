@@ -6,6 +6,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use App\Models\Participante;
 
 class User extends Authenticatable
 {
@@ -46,6 +48,11 @@ class User extends Authenticatable
         ];
     }
 
+    public function participante(): HasOne
+    {
+        return $this->hasOne(Participante::class);
+    }
+
     public function roles()
     {
         return $this->belongsToMany(Rol::class, 'user_rol', 'user_id', 'rol_id');
@@ -54,5 +61,21 @@ class User extends Authenticatable
     public function calificaciones()
     {
         return $this->hasMany(Calificacion::class, 'juez_user_id');
+    }
+    public function getDashboardRouteName()
+    {
+        if ($this->roles->contains('nombre', 'Admin')) {
+            return 'admin.dashboard';
+        }
+
+        if ($this->roles->contains('nombre', 'Juez')) {
+            return 'juez.dashboard';
+        }
+
+        if ($this->roles->contains('nombre', 'Participante')) {
+            return 'participante.dashboard';
+        }
+
+        return 'login'; // Fallback por si acaso
     }
 }
