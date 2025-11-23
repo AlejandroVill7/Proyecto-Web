@@ -12,7 +12,7 @@ class Participante extends Model
 
     protected $table = 'participantes';
 
-    protected $fillable = ['user_id', 'carrera_id', 'no_control'];
+    protected $fillable = ['user_id', 'carrera_id', 'no_control', 'telefono'];
 
     public function user()
     {

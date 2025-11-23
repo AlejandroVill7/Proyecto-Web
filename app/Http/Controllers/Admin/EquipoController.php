@@ -15,52 +15,52 @@ class EquipoController extends Controller
 {
     public function index(Request $request)
     {
-        // (Tu código del index anterior aquí...)
-        // Solo asegúrate de retornar la vista correcta
         $query = Equipo::with(['proyecto.evento', 'participantes']);
         if ($request->filled('search')) $query->where('nombre', 'like', '%' . $request->search . '%');
         
         $equipos = $query->latest()->paginate(10)->withQueryString();
-        $eventos = Evento::all();
+        $eventos = Evento::all(); // Para filtros si los implementas después
 
         return view('admin.equipos.index', compact('equipos', 'eventos'));
     }
 
-    // 👇 NUEVO: Vista de Creación
     public function create()
     {
-        return view('admin.equipos.create');
+        // Necesitamos los eventos para saber a cuál asociar el equipo
+        $eventos = Evento::where('fecha_fin', '>=', now())->get(); 
+        return view('admin.equipos.create', compact('eventos'));
     }
 
-    // 👇 NUEVO: Guardar Equipo
     public function store(StoreEquipoRequest $request)
     {
+        // Creamos el equipo (validado por el Request)
         $equipo = Equipo::create($request->validated());
         
-        // Redirigimos directo al show para que el admin agregue miembros
+        // Si el request incluía datos del proyecto, lo creamos de una vez (Opcional)
+        // $equipo->proyecto()->create([...]);
+
         return redirect()->route('admin.equipos.show', $equipo)
                          ->with('success', 'Equipo creado. Ahora agrega los integrantes.');
     }
 
-    // 👇 ACTUALIZADO: Show con lista inteligente
     public function show(Equipo $equipo)
     {
+        // Cargamos relaciones necesarias
         $equipo->load(['participantes.user', 'participantes.carrera', 'proyecto.evento']);
         
         $perfiles = Perfil::all();
 
-        // Traemos TODOS los participantes con sus equipos para ver el estado
-        // En un sistema real con miles de alumnos, esto debería ser una API con búsqueda AJAX (Select2)
-        // Para este proyecto, traerlos todos y filtrar con JS (Alpine) está bien.
-        $todos_participantes = Participante::with(['user', 'equipos'])->get();
+        // Traemos participantes para el "Buscador Modo Dios"
+        // Optimizamos cargando solo lo necesario
+        $todos_participantes = Participante::with('user')->get();
 
         return view('admin.equipos.show', compact('equipo', 'perfiles', 'todos_participantes'));
     }
 
-    // ... (edit, update, destroy se mantienen igual) ...
     public function edit(Equipo $equipo)
     {
-        return view('admin.equipos.edit', compact('equipo'));
+        $eventos = Evento::all();
+        return view('admin.equipos.edit', compact('equipo', 'eventos'));
     }
 
     public function update(UpdateEquipoRequest $request, Equipo $equipo)
@@ -75,32 +75,47 @@ class EquipoController extends Controller
         return redirect()->route('admin.equipos.index')->with('success', 'Equipo eliminado.');
     }
 
-    // ---------------------------------------------------
-    // LÓGICA DE MIEMBROS
-    // ---------------------------------------------------
 
     public function addMember(Request $request, Equipo $equipo)
     {
         $request->validate([
-            'participante_id' => 'required|exists:participantes,id', // Cambiamos a ID directo desde el select
+            'participante_id' => 'required|exists:participantes,id',
             'perfil_id' => 'required|exists:perfiles,id',
         ]);
 
-        // Validar si ya está en el equipo
-        if ($equipo->participantes->contains($request->participante_id)) {
-            return back()->with('error', 'Este participante ya está en el equipo.');
+        $participante = Participante::find($request->participante_id);
+
+        if ($participante->equipos()->exists()) {
+             return back()->with('error', 'El participante ya pertenece a un equipo. Debe salirse primero.');
         }
 
+        // 2. VALIDACIÓN LÍDER: ¿Ya hay un líder y están intentando meter otro?
+        $perfilLider = Perfil::where('nombre', 'Líder de Proyecto')->first();
+        if ($perfilLider && $request->perfil_id == $perfilLider->id) {
+            $yaHayLider = $equipo->participantes()
+                                 ->wherePivot('perfil_id', $perfilLider->id)
+                                 ->exists();
+            
+            if ($yaHayLider) {
+                return back()->with('error', 'Este equipo ya tiene un Líder asignado.');
+            }
+        }
+
+        // 3. AGREGAR ALUMNO
         $equipo->participantes()->attach($request->participante_id, [
-            'perfil_id' => $request->perfil_id
+            'perfil_id' => $request->perfil_id,
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
-        return back()->with('success', 'Participante agregado.');
+        return back()->with('success', 'Participante agregado correctamente.');
     }
 
     public function removeMember(Equipo $equipo, Participante $participante)
     {
-        $equipo->participantes()->detach($participante->id);
-        return back()->with('success', 'Miembro eliminado.');
+        
+        $equipo->removerIntegrante($participante->id);
+
+        return back()->with('success', 'Miembro eliminado. Si era líder, el rol fue reasignado.');
     }
 }

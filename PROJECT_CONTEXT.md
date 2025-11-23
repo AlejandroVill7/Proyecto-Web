@@ -86,3 +86,75 @@ Foco: Módulo Participante
 
 Fecha de actualización: 22 de Noviembre, 2025  
 Versión: 0.8.0 (Beta - Admin Module Complete)
+
+# PROJECT_CONTEXT.md - Sistema de Gestión de Proyectos Académicos
+
+## 1. ESTADO DEL PROYECTO (23/11/2025)
+
+**Versión:** 0.9.0 (RC - Módulos Admin y Participante Completos)  
+**Rama Actual:** main (merged from feature/modulo-participante-registro)
+
+### Módulos Completados
+
+* **Arquitectura Base:** Autenticación por Roles (Middleware), redirecciones en login, base de datos normalizada.
+* **Módulo Administrador (Completo):**
+    * Gestión total de Usuarios, Eventos, Equipos y Criterios.
+    * Dashboard métrico y generación de reportes globales.
+* **Módulo Participante (Completo):**
+    * **Registro:** Flujo forzoso para capturar No. Control, Carrera y Teléfono.
+    * **Dashboard:** Vista horizontal con Gráfico de Radar (Chart.js) mostrando desempeño por criterio, Calendario de eventos próximos y accesos directos.
+    * **Gestión de Equipos:**
+        * *Creación:* Transaccional (Equipo + Proyecto + Asignación Líder).
+        * *Unirse:* Buscador con filtros y validación de cupos.
+        * *Gestión:* Interfaz con Alpine.js para buscar alumnos disponibles y administrar miembros.
+    * **Bitácora:** Sistema de timeline para registrar avances del proyecto.
+    * **Resultados:** Descarga autónoma de Constancias (PDF) con cálculo de ranking en tiempo real (1ro, 2do, 3er lugar o Participación).
+* **Módulo Juez (Parcial):**
+    * Dashboard básico.
+    * Interfaz de evaluación funcional (sliders).
+
+### UX/UI
+* **Modo Oscuro:** Soporte completo en todas las vistas nuevas (Gráficos adaptativos, tablas, dropdowns).
+* **Interactividad:** Alpine.js utilizado para buscadores asíncronos y menús.
+
+## 2. REGLAS DE NEGOCIO & STACK TÉCNICO
+
+### Stack Tecnológico
+* **Backend:** Laravel 11, PHP 8.2+.
+* **Base de Datos:** MySQL/PostgreSQL.
+* **Frontend:** Blade, Alpine.js, Tailwind CSS.
+* **Librerías Clave:** `barryvdh/laravel-dompdf` (PDF), `Chart.js` (Gráficos Radar/Barras).
+
+### Lógica de Evaluación
+* **Puntaje:** `(Promedio Jueces × Ponderación Criterio) / 100`.
+* **Ranking:** Dinámico basado en la sumatoria total.
+* **Constancias:** El sistema determina automáticamente el tipo de diploma basado en la posición del equipo al momento de la descarga.
+
+## 3. ESQUEMA DE DATOS (Actualizado)
+
+* **Tablas maestras:** `users`, `roles`, `perfiles`, `carreras`, `eventos`.
+* **Participantes:** `participantes` (extiende users, incluye teléfono y no_control).
+* **Proyectos:** `proyectos` (repo_url, descripción). Relación 1:1 con Equipos.
+* **Avances:** `avances` (Tabla nueva: proyecto_id, descripcion, fecha).
+* **Evaluación:** `criterio_evaluacion`, `calificaciones`.
+
+## 4. SIGUIENTES PASOS (ROADMAP)
+
+**Foco Inmediato: Módulo Juez (Fase Final)**
+
+1.  **Listado de Proyectos:** Vista para que el juez vea qué equipos tiene asignados o disponibles para evaluar.
+2.  **Detalle de Evaluación:** Mejorar la vista de sliders para mostrar el cálculo en tiempo real.
+3.  **Feedback:** Permitir al juez dejar comentarios de retroalimentación (opcional).
+
+**Mantenimiento:**
+* Refactorizar vistas duplicadas (ej. PDF de constancias) para usar componentes compartidos.
+* Pruebas de estrés con múltiples jueces calificando simultáneamente.
+
+## 5. GUÍAS DE DESARROLLO
+
+* **Chart.js:** Al implementar gráficos, configurar siempre los colores de texto y rejilla para soportar Dark Mode (usar variables condicionales JS).
+* **PDF:** Usar `stream()` para previsualización en navegador en lugar de `download()`.
+* **Validaciones:** Mantener lógica de negocio (ej. "Mínimo 2 integrantes") en Controladores o FormRequests, no solo en vista.
+
+---
+*Fecha de actualización: 23 de Noviembre, 2025*
