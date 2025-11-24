@@ -11,7 +11,7 @@
                 </div>
 
                 <!-- Navigation Links (ESCRITORIO) -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                <div class="hidden space-x-8 lg:-my-px lg:ms-10 lg:flex">
                     {{-- 1. Dashboard (Común) --}}
                     <x-nav-link :href="route(Auth::user()->getDashboardRouteName())"
                         :active="request()->routeIs('*.dashboard')">
@@ -51,7 +51,7 @@
                 </div>
             </div>
 
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
+            <div class="hidden lg:flex lg:items-center lg:ms-6">
 
                 <!-- Botón de Tema (Dark/Light Mode) -->
                 <button id="theme-toggle" type="button"
@@ -107,7 +107,7 @@
             </div>
 
             <!-- Hamburger -->
-            <div class="-me-2 flex items-center sm:hidden">
+            <div class="-me-2 flex items-center lg:hidden">
                 <button @click="open = ! open"
                     class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-900 focus:text-gray-500 dark:focus:text-gray-400 transition duration-150 ease-in-out">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
@@ -123,7 +123,7 @@
     </div>
 
     <!-- Responsive Navigation Menu (MÓVIL) -->
-    <div :class="{ 'block': open, 'hidden': !open }" class="hidden sm:hidden">
+    <div :class="{ 'block': open, 'hidden': !open }" class="hidden lg:hidden">
         <div class="pt-2 pb-3 space-y-1">
             {{-- 1. Dashboard --}}
             <x-responsive-nav-link :href="route(Auth::user()->getDashboardRouteName())"
