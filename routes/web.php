@@ -52,7 +52,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Cargamos el modelo User explícitamente con roles para evitar advertencias de analizadores
         $user = \App\Models\User::with('roles')->find(\Illuminate\Support\Facades\Auth::id());
 
-        if (! $user) {
+        if (!$user) {
             return redirect()->route('login');
         }
 
@@ -64,8 +64,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 // MÓDULO ADMINISTRADOR
 // ==========================================
 Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->group(function () {
-    
+
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+    Route::post('/dashboard/preferences', [AdminController::class, 'savePreferences'])->name('dashboard.preferences');
+    Route::get('/dashboard/report', [AdminController::class, 'generateReport'])->name('dashboard.report');
 
     // Gestión Principal
     Route::resource('eventos', EventoController::class);
@@ -78,7 +80,7 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
     Route::put('/criterios/{criterio}', [AdminCriterioController::class, 'update'])->name('criterios.update');
     Route::delete('/criterios/{criterio}', [AdminCriterioController::class, 'destroy'])->name('criterios.destroy');
     Route::get('/criterios/{criterio}/editar', [AdminCriterioController::class, 'edit'])->name('criterios.edit');
-    
+
     // Gestión de Miembros de Equipo (Admin)
     Route::post('/equipos/{equipo}/miembros', [AdminEquipoController::class, 'addMember'])->name('equipos.miembros.store');
     Route::delete('/equipos/{equipo}/miembros/{participante}', [AdminEquipoController::class, 'removeMember'])->name('equipos.miembros.destroy');
@@ -98,7 +100,7 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
 // MÓDULO JUEZ
 // ==========================================
 Route::middleware(['auth', 'role:Juez'])->prefix('juez')->name('juez.')->group(function () {
-    
+
     // Dashboard y Vista de Evento
     Route::get('/dashboard', [JuezController::class, 'index'])->name('dashboard');
     Route::get('/evento/{evento}', [JuezController::class, 'showEvento'])->name('evento.show');
@@ -125,7 +127,7 @@ Route::middleware(['auth', 'role:Juez'])->prefix('juez')->name('juez.')->group(f
 // MÓDULO PARTICIPANTE
 // ==========================================
 Route::middleware(['auth', 'role:Participante'])->prefix('participante')->name('participante.')->group(function () {
-    
+
     // 1. Registro Inicial (Accesible SIN perfil completo)
     Route::controller(PerfilController::class)->group(function () {
         Route::get('/registro-inicial', 'create')->name('registro.inicial');
@@ -134,18 +136,18 @@ Route::middleware(['auth', 'role:Participante'])->prefix('participante')->name('
 
     // 2. Área Protegida (Requiere Perfil Completo: Teléfono, Carrera, etc.)
     Route::middleware([EnsureParticipantProfileExists::class])->group(function () {
-        
+
         Route::get('/dashboard', [ParticipanteController::class, 'index'])->name('dashboard');
 
         // Gestión de Equipos (CRUD Básico y Acciones Específicas)
         Route::resource('equipos', ParticipanteEquipoController::class)->only(['create', 'store', 'edit', 'update']);
         Route::delete('/equipos/salir', [\App\Http\Controllers\Participante\EquipoController::class, 'leave'])->name('equipos.leave');
-        
+
         Route::controller(ParticipanteEquipoController::class)->group(function () {
             // Unirse a equipo existente
             Route::get('/unirse-equipo', 'showJoinForm')->name('equipos.join');
             Route::post('/unirse-equipo', 'join')->name('equipos.join.store');
-            
+
             // Gestión de miembros por el líder
             Route::post('/equipo/agregar-miembro', 'addMember')->name('equipos.addMember');
             Route::delete('/equipo/eliminar-miembro/{id}', 'removeMember')->name('equipos.removeMember');
