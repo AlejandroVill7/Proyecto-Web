@@ -3,14 +3,14 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'GesPro') }}</title>
     
     <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800&display=swap" rel="stylesheet" />
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
-    {{-- Script para evitar parpadeo de tema --}}
+    {{-- Script Anti-Flicker para Dark Mode --}}
     <script>
         if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
@@ -19,160 +19,160 @@
         }
     </script>
 </head>
-<body class="antialiased bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100 selection:bg-indigo-500 selection:text-white transition-colors duration-300">
+<body class="antialiased text-gray-900 dark:text-gray-100 font-sans selection:bg-indigo-500 selection:text-white overflow-x-hidden">
     
-    <div class="relative flex items-top justify-center min-h-screen sm:items-center py-4 sm:pt-0">
+    <div class="fixed inset-0 -z-10 bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
+        <div class="absolute top-0 -left-4 w-96 h-96 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 dark:opacity-10 animate-blob"></div>
+        <div class="absolute top-0 -right-4 w-96 h-96 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 dark:opacity-10 animate-blob animation-delay-2000"></div>
+        <div class="absolute -bottom-32 left-20 w-96 h-96 bg-pink-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 dark:opacity-10 animate-blob animation-delay-4000"></div>
         
-        {{-- NAVEGACIÓN SUPERIOR --}}
-        <div class="fixed top-0 right-0 px-6 py-4 z-10 flex items-center gap-4">
-            
-            {{-- BOTÓN TOGGLE TEMA (Sol/Luna) --}}
-            <button id="theme-toggle-welcome" type="button" class="text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5 transition">
-                <svg id="theme-toggle-dark-icon-welcome" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
-                <svg id="theme-toggle-light-icon-welcome" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
-            </button>
-
-            @if (Route::has('login'))
-                @auth
-                    <a href="{{ route('dashboard') }}" class="text-sm text-gray-700 dark:text-gray-300 underline decoration-indigo-500 decoration-2 underline-offset-4 font-semibold hover:text-indigo-600 dark:hover:text-indigo-400 transition">
-                        Dashboard
-                    </a>
-                @else
-                    <a href="{{ route('login') }}" class="text-sm text-gray-700 dark:text-gray-300 underline decoration-transparent hover:decoration-indigo-500 underline-offset-4 font-semibold transition">
-                        Iniciar Sesión
-                    </a>
-
-                    @if (Route::has('register'))
-                        <a href="{{ route('register') }}" class="text-sm text-gray-700 dark:text-gray-300 underline decoration-transparent hover:decoration-indigo-500 underline-offset-4 font-semibold transition">
-                            Registrarse
-                        </a>
-                    @endif
-                @endauth
-            @endif
-        </div>
-
-        {{-- CONTENIDO PRINCIPAL --}}
-        <div class="max-w-7xl mx-auto p-6 lg:p-8 w-full">
-            
-            <div class="flex justify-center">
-                <div class="bg-indigo-50 dark:bg-gray-800 p-4 rounded-2xl mb-8 shadow-inner">
-                    <svg class="w-16 h-16 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
-                </div>
-            </div>
-
-            <div class="text-center mb-12">
-                <h1 class="text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-5xl md:text-6xl">
-                    <span class="block">Gestión de</span>
-                    <span class="block text-indigo-600 dark:text-indigo-400 mt-1">Proyectos Académicos</span>
-                </h1>
-                <p class="mt-4 max-w-md mx-auto text-base text-gray-500 dark:text-gray-400 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
-                    Plataforma integral para la administración de eventos, evaluación de equipos multidisciplinarios y seguimiento de resultados.
-                </p>
-                <div class="mt-8 max-w-md mx-auto sm:flex sm:justify-center gap-4">
-                    @auth
-                        <a href="{{ route('dashboard') }}" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10 transition shadow-lg">
-                            Ir a mi Panel
-                        </a>
-                    @else
-                        <a href="{{ route('login') }}" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10 transition shadow-lg">
-                            Entrar
-                        </a>
-                        <a href="{{ route('register') }}" class="mt-3 sm:mt-0 w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 md:py-4 md:text-lg md:px-10 transition">
-                            Registrarse
-                        </a>
-                    @endauth
-                </div>
-            </div>
-
-            <div class="mt-16 border-t border-gray-200 dark:border-gray-800 pt-10">
-                <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                    
-                    <div class="pt-6">
-                        <div class="flow-root bg-white dark:bg-gray-800 rounded-lg px-6 pb-8 shadow-md hover:shadow-lg transition duration-300 h-full">
-                            <div class="-mt-6">
-                                <div>
-                                    <span class="inline-flex items-center justify-center p-3 bg-indigo-500 rounded-md shadow-lg">
-                                        <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                                    </span>
-                                </div>
-                                <h3 class="mt-8 text-lg font-medium text-gray-900 dark:text-white tracking-tight">Equipos Multidisciplinarios</h3>
-                                <p class="mt-5 text-base text-gray-500 dark:text-gray-400">
-                                    Forma equipos con estudiantes de diferentes carreras para potenciar tus proyectos y habilidades.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="pt-6">
-                        <div class="flow-root bg-white dark:bg-gray-800 rounded-lg px-6 pb-8 shadow-md hover:shadow-lg transition duration-300 h-full">
-                            <div class="-mt-6">
-                                <div>
-                                    <span class="inline-flex items-center justify-center p-3 bg-indigo-500 rounded-md shadow-lg">
-                                        <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z"></path></svg>
-                                    </span>
-                                </div>
-                                <h3 class="mt-8 text-lg font-medium text-gray-900 dark:text-white tracking-tight">Evaluación en Tiempo Real</h3>
-                                <p class="mt-5 text-base text-gray-500 dark:text-gray-400">
-                                    Recibe retroalimentación instantánea de los jueces y visualiza tu progreso mediante gráficos dinámicos.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="pt-6">
-                        <div class="flow-root bg-white dark:bg-gray-800 rounded-lg px-6 pb-8 shadow-md hover:shadow-lg transition duration-300 h-full">
-                            <div class="-mt-6">
-                                <div>
-                                    <span class="inline-flex items-center justify-center p-3 bg-indigo-500 rounded-md shadow-lg">
-                                        <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                    </span>
-                                </div>
-                                <h3 class="mt-8 text-lg font-medium text-gray-900 dark:text-white tracking-tight">Certificación Digital</h3>
-                                <p class="mt-5 text-base text-gray-500 dark:text-gray-400">
-                                    Genera y descarga constancias de participación y diplomas de logros automáticamente al finalizar.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex justify-center mt-16 text-sm text-gray-500 dark:text-gray-500">
-                &copy; {{ date('Y') }} Sistema de Gestión de Proyectos. Todos los derechos reservados.
-            </div>
-        </div>
+        <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
     </div>
 
-    {{-- Script para el Toggle en Welcome (Independiente) --}}
+    <div class="relative min-h-screen flex flex-col justify-center items-center">
+        
+        {{-- NAVBAR --}}
+        <div class="absolute top-0 w-full p-6 flex justify-between items-center max-w-7xl mx-auto z-20">
+            <div class="flex items-center gap-2">
+                <div class="bg-indigo-600 p-2 rounded-lg text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                </div>
+                <span class="font-bold text-xl tracking-tight dark:text-white">GesPro</span>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <button id="theme-toggle-welcome" type="button" class="p-2 rounded-full text-gray-500 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <svg id="theme-toggle-dark-icon-welcome" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                    <svg id="theme-toggle-light-icon-welcome" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+                </button>
+
+                @if (Route::has('login'))
+                    <div class="hidden sm:flex gap-4">
+                        @auth
+                            <a href="{{ route('dashboard') }}" class="font-semibold text-gray-600 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-white transition">Dashboard</a>
+                        @else
+                            <a href="{{ route('login') }}" class="font-semibold text-gray-600 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-white transition sm: mt-1.5">Login</a>
+                            @if (Route::has('register'))
+                                <a href="{{ route('register') }}" class="px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg text-sm font-bold hover:opacity-90 transition shadow-lg">Registrarse</a>
+                            @endif
+                        @endauth
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        {{-- HERO SECTION --}}
+        <div class="max-w-7xl mx-auto px-6 pt-20 pb-16 lg:pt-32 text-center relative z-10">
+                        
+            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 text-gray-900 dark:text-white">
+                Gestión de <br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">Proyectos</span>
+            </h1>
+            
+            <p class="max-w-2xl mx-auto text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-10 leading-relaxed">
+                Centraliza eventos, forma equipos multidisciplinarios y evalúa resultados en tiempo real. La herramienta definitiva para docentes y estudiantes.
+            </p>
+
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                @auth
+                    <a href="{{ route('dashboard') }}" class="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-lg shadow-xl shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:-translate-y-1 transition-all duration-300">
+                        Ir al Panel
+                    </a>
+                @else
+                    <a href="{{ route('login') }}" class="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-lg shadow-xl shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:-translate-y-1 transition-all duration-300">
+                        Comenzar Ahora
+                    </a>
+                    <a href="{{ route('register') }}" class="px-8 py-4 bg-white dark:bg-gray-800 text-gray-700 dark:text-white border border-gray-200 dark:border-gray-700 rounded-xl font-bold text-lg hover:bg-gray-50 dark:hover:bg-gray-700 hover:-translate-y-1 transition-all duration-300">
+                        Crear Cuenta
+                    </a>
+                @endauth
+            </div>
+        </div>
+
+        {{-- FEATURES GRID --}}
+        <div class="max-w-7xl mx-auto px-6 pb-20 w-full">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <div class="group bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm p-8 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-2xl hover:border-indigo-500/30 dark:hover:border-indigo-500/30 hover:-translate-y-2 transition-all duration-300">
+                    <div class="w-14 h-14 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center text-blue-600 dark:text-blue-400 mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">Equipos Dinámicos</h3>
+                    <p class="text-gray-500 dark:text-gray-400 leading-relaxed">
+                        Fomenta la colaboración. Crea equipos multidisciplinarios combinando talento de diversas carreras.
+                    </p>
+                </div>
+
+                <div class="group bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm p-8 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-2xl hover:border-purple-500/30 dark:hover:border-purple-500/30 hover:-translate-y-2 transition-all duration-300">
+                    <div class="w-14 h-14 bg-purple-100 dark:bg-purple-900/30 rounded-2xl flex items-center justify-center text-purple-600 dark:text-purple-400 mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">Evaluación en Tiempo Real</h3>
+                    <p class="text-gray-500 dark:text-gray-400 leading-relaxed">
+                        Sistema de rúbricas digital. Los jueces evalúan y los resultados se calculan instantáneamente.
+                    </p>
+                </div>
+
+                <div class="group bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm p-8 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-2xl hover:border-pink-500/30 dark:hover:border-pink-500/30 hover:-translate-y-2 transition-all duration-300">
+                    <div class="w-14 h-14 bg-pink-100 dark:bg-pink-900/30 rounded-2xl flex items-center justify-center text-pink-600 dark:text-pink-400 mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">Resultados Automáticos</h3>
+                    <p class="text-gray-500 dark:text-gray-400 leading-relaxed">
+                        Generación automática de rankings, podios y constancias de participación listas para descargar.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
+        <footer class="absolute bottom-4 text-center w-full text-xs text-gray-400 dark:text-gray-600">
+            &copy; {{ date('Y') }} GesPro System. Todos los derechos reservados.
+        </footer>
+    </div>
+
+    {{-- Script para Toggle Tema --}}
     <script>
         const welcomeToggleBtn = document.getElementById('theme-toggle-welcome');
         const welcomeDarkIcon = document.getElementById('theme-toggle-dark-icon-welcome');
         const welcomeLightIcon = document.getElementById('theme-toggle-light-icon-welcome');
 
-        // Sincronizar iconos al inicio
-        if (document.documentElement.classList.contains('dark')) {
-            welcomeLightIcon.classList.remove('hidden');
-            welcomeDarkIcon.classList.add('hidden');
-        } else {
-            welcomeLightIcon.classList.add('hidden');
-            welcomeDarkIcon.classList.remove('hidden');
-        }
-
-        welcomeToggleBtn.addEventListener('click', function() {
-            // Alternar clase
-            document.documentElement.classList.toggle('dark');
-            
-            // Guardar y cambiar iconos
+        function updateIcons() {
             if (document.documentElement.classList.contains('dark')) {
-                localStorage.setItem('theme', 'dark');
                 welcomeLightIcon.classList.remove('hidden');
                 welcomeDarkIcon.classList.add('hidden');
             } else {
-                localStorage.setItem('theme', 'light');
                 welcomeLightIcon.classList.add('hidden');
                 welcomeDarkIcon.classList.remove('hidden');
             }
+        }
+
+        updateIcons();
+
+        welcomeToggleBtn.addEventListener('click', function() {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+            updateIcons();
         });
     </script>
+    
+    {{-- Animación CSS para los Blobs --}}
+    <style>
+        @keyframes blob {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+        .animate-blob {
+            animation: blob 7s infinite;
+        }
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+        .animation-delay-4000 {
+            animation-delay: 4s;
+        }
+    </style>
 </body>
 </html>

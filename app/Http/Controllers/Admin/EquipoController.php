@@ -19,7 +19,7 @@ class EquipoController extends Controller
         if ($request->filled('search'))
             $query->where('nombre', 'like', '%' . $request->search . '%');
 
-        $equipos = $query->latest()->paginate(10)->withQueryString();
+        $equipos = $query->latest()->paginate(9)->withQueryString();
         $eventos = Evento::all();
 
         return view('admin.equipos.index', compact('equipos', 'eventos'));

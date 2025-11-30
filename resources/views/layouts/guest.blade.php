@@ -24,20 +24,8 @@
 
 <body class="font-sans text-gray-900 antialiased">
     <div class="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 relative">
-        <div class="absolute top-24">
-            <a href="/" class="relative flex justify-center items-center">
-                {{-- Glow Effect --}}
-                <div
-                    class="absolute -inset-4 bg-gradient-to-r from-blue-600 to-violet-600 rounded-full blur-2xl opacity-75 animate-pulse">
-                </div>
-
-                {{-- Logo --}}
-                <x-application-logo class="relative w-48 h-48 fill-current text-gray-500" />
-            </a>
-        </div>
-
         <div
-            class="w-full sm:max-w-md px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg z-10">
+            class="sm:max-w-5xl">
             {{ $slot }}
         </div>
     </div>
