@@ -497,9 +497,7 @@
             @endif
         </div>
     </div>
-
-    {{-- SCRIPT GRÁFICO (BARRAS HORIZONTALES) --}}
-    @if ($equipo | $proyecto)
+    
     {{-- SCRIPT GRÁFICO (BARRAS HORIZONTALES) --}}
     @if ($equipo && $proyecto)
         <script>
@@ -608,6 +606,5 @@
                 });
             });
         </script>
-    @endif
     @endif
 </x-app-layout>
