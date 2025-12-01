@@ -111,121 +111,132 @@
         <p>Generado el: {{ now()->format('d/m/Y H:i') }} | Usuario: {{ Auth::user()->name }}</p>
     </div>
 
-    {{-- RESUMEN GENERAL --}}
-    <div class="section">
-        <div class="section-title">Resumen General</div>
-        <table class="stats-grid">
-            <tr>
-                <td>
-                    <div class="stat-value">{{ $total_jueces + $total_participantes }}</div>
-                    <div class="stat-label">Usuarios Totales</div>
-                </td>
-                <td>
+    {{-- RESUMEN GENERAL (Siempre visible si stats están activos) --}}
+    @if($visibleSections['stats'] ?? true)
+        <div class="section">
+            <div class="section-title">Resumen General</div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">{{ $total_jueces }}</div>
+                    <div class="stat-label">Jueces Registrados</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{ $total_participantes }}</div>
+                    <div class="stat-label">Participantes</div>
+                </div>
+                <div class="stat-card">
                     <div class="stat-value">{{ $total_equipos }}</div>
                     <div class="stat-label">Equipos</div>
-                </td>
-                <td>
+                </div>
+                <div class="stat-card">
                     <div class="stat-value">{{ $total_proyectos }}</div>
                     <div class="stat-label">Proyectos</div>
-                </td>
-                <td>
-                    <div class="stat-value">{{ $eventos_activos->count() }}</div>
-                    <div class="stat-label">Eventos Activos</div>
-                </td>
-            </tr>
-        </table>
-    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 
     {{-- DETALLES DE PROYECTOS --}}
-    <div class="section">
-        <div class="section-title">Estado de Proyectos</div>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Estado</th>
-                    <th>Cantidad</th>
-                    <th>Porcentaje</th>
-                    <th>Visualización</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Evaluados</td>
-                    <td>{{ $proyectosEvaluados }}</td>
-                    <td>{{ $total_proyectos > 0 ? round(($proyectosEvaluados / $total_proyectos) * 100, 1) : 0 }}%</td>
-                    <td>
-                        <div class="progress-bar">
-                            <div class="progress-fill"
-                                style="width: {{ $total_proyectos > 0 ? ($proyectosEvaluados / $total_proyectos) * 100 : 0 }}%;">
+    @if($visibleSections['evaluacion'] ?? true)
+        <div class="section">
+            <div class="section-title">
+                Estado de Proyectos
+                @if(isset($eventoReporte))
+                    <span style="font-weight: normal; font-size: 12px; color: #666;">(Evento: {{ $eventoReporte }})</span>
+                @endif
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Estado</th>
+                        <th>Cantidad</th>
+                        <th>Porcentaje</th>
+                        <th>Visualización</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Evaluados</td>
+                        <td>{{ $statsReporte['evaluados'] }}</td>
+                        <td>{{ $statsReporte['total'] > 0 ? round(($statsReporte['evaluados'] / $statsReporte['total']) * 100, 1) : 0 }}%
+                        </td>
+                        <td>
+                            <div class="progress-bar">
+                                <div class="progress-fill"
+                                    style="width: {{ $statsReporte['total'] > 0 ? ($statsReporte['evaluados'] / $statsReporte['total']) * 100 : 0 }}%;">
+                                </div>
                             </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Pendientes</td>
-                    <td>{{ $proyectosPendientes }}</td>
-                    <td>{{ $total_proyectos > 0 ? round(($proyectosPendientes / $total_proyectos) * 100, 1) : 0 }}%</td>
-                    <td>
-                        <div class="progress-bar">
-                            <div class="progress-fill"
-                                style="width: {{ $total_proyectos > 0 ? ($proyectosPendientes / $total_proyectos) * 100 : 0 }}%; background-color: #9ca3af;">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Pendientes</td>
+                        <td>{{ $statsReporte['pendientes'] }}</td>
+                        <td>{{ $statsReporte['total'] > 0 ? round(($statsReporte['pendientes'] / $statsReporte['total']) * 100, 1) : 0 }}%
+                        </td>
+                        <td>
+                            <div class="progress-bar">
+                                <div class="progress-fill"
+                                    style="width: {{ $statsReporte['total'] > 0 ? ($statsReporte['pendientes'] / $statsReporte['total']) * 100 : 0 }}%; background-color: #9ca3af;">
+                                </div>
                             </div>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    @endif
 
     {{-- PARTICIPACIÓN POR CARRERA --}}
-    <div class="section">
-        <div class="section-title">Participación por Carrera</div>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Carrera</th>
-                    <th>Participantes</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($participantesPorCarrera as $carrera => $total)
+    @if($visibleSections['carreras'] ?? true)
+        <div class="section">
+            <div class="section-title">Participación por Carrera</div>
+            <table class="table">
+                <thead>
                     <tr>
-                        <td>{{ $carrera }}</td>
-                        <td>{{ $total }}</td>
+                        <th>Carrera</th>
+                        <th>Participantes</th>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
+                </thead>
+                <tbody>
+                    @foreach($participantesPorCarrera as $carrera => $total)
+                        <tr>
+                            <td>{{ $carrera }}</td>
+                            <td>{{ $total }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    @endif
 
     {{-- PRÓXIMOS EVENTOS --}}
-    <div class="section">
-        <div class="section-title">Próximos Eventos</div>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Fecha Inicio</th>
-                    <th>Evento</th>
-                    <th>Descripción</th>
-                    <th>Fecha Fin</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($eventos_activos as $evento)
-                    <tr>
-                        <td>{{ \Carbon\Carbon::parse($evento->fecha_inicio)->format('d/m/Y') }}</td>
-                        <td>{{ $evento->nombre }}</td>
-                        <td>{{ Str::limit($evento->descripcion, 50) }}</td>
-                        <td>{{ \Carbon\Carbon::parse($evento->fecha_fin)->format('d/m/Y') }}</td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="4" style="text-align: center;">No hay eventos próximos.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
+    @if($visibleSections['eventos'] ?? true)
+        <div class="section">
+            <div class="section-title">Próximos Eventos</div>
+            @if($eventos_activos->isEmpty())
+                <p style="color: #666; font-style: italic;">No hay eventos programados próximamente.</p>
+            @else
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Evento</th>
+                            <th>Fecha Inicio</th>
+                            <th>Descripción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($eventos_activos as $evento)
+                            <tr>
+                                <td>{{ $evento->nombre }}</td>
+                                <td>{{ \Carbon\Carbon::parse($evento->fecha_inicio)->format('d/m/Y') }}</td>
+                                <td>{{ Str::limit($evento->descripcion, 50) }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @endif
+        </div>
+    @endif
 
 </body>
 
