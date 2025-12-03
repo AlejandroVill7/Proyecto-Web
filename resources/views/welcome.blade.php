@@ -34,14 +34,14 @@
         {{-- NAVBAR --}}
         <div class="absolute top-0 w-full p-6 flex justify-between items-center max-w-7xl mx-auto z-20">
             <div class="flex items-center gap-2">
-                {{-- SECCIÓN DEL LOGO MODIFICADA (Tamaño aumentado a w-12 h-12) --}}
+                {{-- SECCIÓN DEL LOGO NUEVO Y AJUSTE DE TAMAÑO --}}
                 <img src="{{ asset('images/LogoClaro.ico') }}"
                      alt="GesPro Logo"
-                     class="w-12 h-12 object-contain block dark:hidden">
+                     class="w-14 h-14 object-contain block dark:hidden">
 
                 <img src="{{ asset('images/LogoOscuro.ico') }}"
                      alt="GesPro Logo Dark"
-                     class="w-12 h-12 object-contain hidden dark:block">
+                     class="w-14 h-14 object-contain hidden dark:block">
                 {{-- FIN SECCIÓN DEL LOGO MODIFICADA --}}
 
                 <span class="font-bold text-xl tracking-tight dark:text-white">GesPro</span>
