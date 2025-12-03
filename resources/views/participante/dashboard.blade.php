@@ -416,7 +416,7 @@
             <h3
                 class="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                 Crear un Nuevo Equipo</h3>
-            <p class="text-gray-500 dark:text-gray-400 text-sm mb-6">Registra tu idea de
+            <p class="text-gray-500 dark:text-gray-400 text-sm mb-16">Registra tu idea de
                 proyecto,
                 conviértete en líder y recluta a tus compañeros.</p>
             <span
@@ -444,7 +444,7 @@
             <h3
                 class="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
                 Unirme a un Equipo</h3>
-            <p class="text-gray-500 dark:text-gray-400 text-sm mb-6">Explora los equipos
+            <p class="text-gray-500 dark:text-gray-400 text-sm mb-16">Explora los equipos
                 existentes que buscan talento y postúlate con tu perfil.</p>
             <span
                 class="inline-flex items-center text-sm font-bold text-purple-600 dark:text-purple-400 group-hover:translate-x-1 transition-transform">
