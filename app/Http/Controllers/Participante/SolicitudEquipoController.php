@@ -12,11 +12,6 @@ use Illuminate\Http\Request;
 
 class SolicitudEquipoController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
     public function showCrearSolicitud(Request $request, Equipo $equipo)
     {
         $participante = $request->user()->participante;
