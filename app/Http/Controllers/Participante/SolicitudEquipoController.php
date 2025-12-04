@@ -37,26 +37,41 @@ class SolicitudEquipoController extends Controller
             return redirect()->route('participante.dashboard')->with('error', 'Ya estás en otro equipo. Debes salirte primero.');
         }
 
-        // Validar que no haya solicitud pendiente PARA ESTE EQUIPO
-        if (SolicitudEquipo::where('equipo_id', $equipo->id)
+        // Validar que no haya NINGUNA solicitud para este equipo (pendiente, aceptada o rechazada)
+        $solicitudExistente = SolicitudEquipo::where('equipo_id', $equipo->id)
             ->where('participante_id', $participante->id)
-            ->where('estado', 'pendiente')
-            ->exists()) {
-            return redirect()->route('participante.dashboard')->with('error', 'Ya tienes una solicitud pendiente para este equipo.');
+            ->first();
+
+        if ($solicitudExistente) {
+            if ($solicitudExistente->estado === 'pendiente') {
+                return redirect()->route('participante.dashboard')->with('error', 'Ya tienes una solicitud pendiente para este equipo.');
+            } elseif ($solicitudExistente->estado === 'aceptada') {
+                return redirect()->route('participante.dashboard')->with('error', 'Tu solicitud fue aceptada. Ya deberías estar en este equipo.');
+            } else {
+                return redirect()->route('participante.dashboard')->with('error', 'Tu solicitud anterior fue rechazada. Espera antes de intentar nuevamente.');
+            }
         }
 
-        // Crear solicitud
-        $solicitud = SolicitudEquipo::create([
-            'equipo_id' => $equipo->id,
-            'participante_id' => $participante->id,
-            'mensaje' => $request->mensaje,
-            'estado' => 'pendiente'
-        ]);
+        try {
+            // Crear solicitud
+            $solicitud = SolicitudEquipo::create([
+                'equipo_id' => $equipo->id,
+                'participante_id' => $participante->id,
+                'mensaje' => $request->mensaje,
+                'estado' => 'pendiente'
+            ]);
 
-        // Disparar evento
-        event(new SolicitudEquipoEnviada($solicitud));
+            // Disparar evento
+            event(new SolicitudEquipoEnviada($solicitud));
 
-        return redirect()->route('participante.dashboard')->with('success', 'Solicitud enviada al líder del equipo.');
+            return redirect()->route('participante.dashboard')->with('success', 'Solicitud enviada al líder del equipo.');
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Captura error de constraint violation
+            if ($e->getCode() == '23505' || strpos($e->getMessage(), 'unique') !== false) {
+                return redirect()->route('participante.dashboard')->with('error', 'Ya existe una solicitud para este equipo. Por favor, espera a que el líder responda.');
+            }
+            throw $e;
+        }
     }
 
     public function misSolicitudes(Request $request)
