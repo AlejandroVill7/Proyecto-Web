@@ -90,24 +90,10 @@
                                     @csrf
                                     <input type="hidden" name="equipo_id" value="{{ $equipo->id }}">
 
-                                    <div class="space-y-3">
-                                        <div>
-                                            <label for="rol_{{ $equipo->id }}" class="text-[10px] uppercase font-bold text-gray-400 dark:text-gray-500 tracking-wider mb-1 block">Postularse como:</label>
-                                            <select id="rol_{{ $equipo->id }}" name="perfil_id"
-                                                class="w-full text-xs rounded-lg border-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200 focus:border-indigo-500 focus:ring-indigo-500 py-2 shadow-sm"
-                                                required>
-                                                <option value="" disabled selected>Selecciona un rol...</option>
-                                                @foreach ($perfiles as $perfil)
-                                                    <option value="{{ $perfil->id }}">{{ $perfil->nombre }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-
-                                        <button type="submit" class="w-full flex justify-center items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest transition ease-in-out duration-150 shadow-md hover:shadow-lg">
-                                            Unirse al Equipo
-                                            <svg class="ml-2 w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
-                                        </button>
-                                    </div>
+                                    <button type="submit" class="w-full flex justify-center items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest transition ease-in-out duration-150 shadow-md hover:shadow-lg">
+                                        <svg class="mr-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                                        Enviar Solicitud
+                                    </button>
                                 </form>
                             </div>
 

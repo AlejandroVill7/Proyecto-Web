@@ -17,6 +17,13 @@ class SolicitudEquipoController extends Controller
         $this->middleware('auth');
     }
 
+    public function showCrearSolicitud(Request $request, Equipo $equipo)
+    {
+        $participante = $request->user()->participante;
+
+        return view('participante.solicitudes.crear-solicitud', compact('equipo', 'participante'));
+    }
+
     public function crearSolicitud(Request $request, Equipo $equipo)
     {
         $request->validate([

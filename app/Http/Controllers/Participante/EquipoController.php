@@ -118,31 +118,29 @@ class EquipoController extends Controller
 
     public function join(Request $request)
     {
-        // Este método se queda igual, ya que para unirse solo necesitamos ID de equipo y perfil
         $request->validate([
             'equipo_id' => 'required|exists:equipos,id',
-            'perfil_id' => 'required|exists:perfiles,id',
+            'mensaje' => 'nullable|string|max:500',
         ]);
 
         $user = Auth::user();
+        $participante = $user->participante;
 
-        if ($user->participante->equipos()->exists()) {
+        // Validación 1: Que no esté en otro equipo
+        if ($participante->equipos()->exists()) {
             return back()->with('error', 'Ya tienes equipo.');
         }
 
         $equipo = Equipo::find($request->equipo_id);
 
+        // Validación 2: Que el equipo no esté lleno
         if ($equipo->participantes()->count() >= 5) {
             return back()->with('error', 'Equipo lleno.');
         }
 
-        $equipo->participantes()->attach($user->participante->id, [
-            'perfil_id' => $request->perfil_id,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        return redirect()->route('participante.dashboard')->with('success', 'Te uniste al equipo.');
+        // Redirigir al método de crear solicitud
+        return redirect()->route('participante.solicitudes.crear', $equipo)
+            ->with('mensaje', $request->mensaje);
     }
 
     public function edit()

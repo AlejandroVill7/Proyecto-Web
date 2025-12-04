@@ -171,6 +171,7 @@ Route::middleware(['auth', 'role:Participante'])->prefix('participante')->name('
         Route::controller(SolicitudEquipoController::class)->prefix('solicitudes')->name('solicitudes.')->group(function () {
             Route::get('/mis-solicitudes', 'misSolicitudes')->name('mis');
             Route::get('/equipo/{equipo}', 'verSolicitudesEquipo')->name('equipo');
+            Route::get('/{equipo}/crear', 'showCrearSolicitud')->name('crear.form');
             Route::post('/{equipo}/crear', 'crearSolicitud')->name('crear');
             Route::post('/{solicitud}/aceptar', 'aceptar')->name('aceptar');
             Route::post('/{solicitud}/rechazar', 'rechazar')->name('rechazar');
