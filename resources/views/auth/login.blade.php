@@ -83,7 +83,7 @@
                                         d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
                                 </svg>
                             </div>
-                            <input id="email" type="email" name="email" :value="old('email')" required autofocus
+                            <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus
                                 autocomplete="username"
                                 class="w-full pl-10 pr-4 py-3 rounded-xl border-gray-300 dark:bg-gray-900 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-sm"
                                 placeholder="nombre@ejemplo.com">

@@ -1,5 +1,10 @@
 import './bootstrap';
 
+// Importar Alpine.js
+import Alpine from 'alpinejs';
+window.Alpine = Alpine;
+Alpine.start();
+
 // Importar GSAP y ScrollTrigger
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
