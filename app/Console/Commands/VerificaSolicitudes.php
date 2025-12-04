@@ -13,10 +13,12 @@ class VerificaSolicitudes extends Command
 
     public function handle()
     {
-        $this->info('=== TODAS LAS SOLICITUDES EN BD ===\n');
+        $this->info('=== RESUMEN DE SOLICITUDES ===\n');
         
+        // Mostrar todas las solicitudes
         $todas = SolicitudEquipo::with(['equipo', 'participante.user'])->orderBy('equipo_id')->get();
         
+        $this->info('TODAS LAS SOLICITUDES:');
         foreach ($todas as $s) {
             $badge = match($s->estado) {
                 'pendiente' => '[PENDIENTE]',
@@ -24,7 +26,26 @@ class VerificaSolicitudes extends Command
                 'rechazada' => '[RECHAZADA]',
                 default => '[UNKNOWN]'
             };
-            $this->line("{$badge} Equipo {$s->equipo_id}: {$s->participante->user->name} → {$s->estado}");
+            $this->line("{$badge} Equipo {$s->equipo_id} ({$s->equipo->nombre}): {$s->participante->user->name}");
+        }
+        
+        // Mostrar qué ve cada líder
+        $this->info("\n=== QUÉ VE CADA LÍDER EN SU DASHBOARD ===\n");
+        
+        $equipos = \App\Models\Equipo::with(['solicitudesPendientes.participante.user'])->get();
+        
+        foreach ($equipos as $e) {
+            $lider = $e->getLider();
+            if (!$lider) continue;
+            
+            $pendientes = $e->solicitudesPendientes()->count();
+            if ($pendientes > 0) {
+                $this->line("📋 {$lider->user->name} (Líder de {$e->nombre}):");
+                $this->line("   Solicitudes pendientes: {$pendientes}");
+                foreach ($e->solicitudesPendientes as $s) {
+                    $this->line("   • {$s->participante->user->name}");
+                }
+            }
         }
         
         $this->info("\n=== ESTADÍSTICAS ===");
