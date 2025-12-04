@@ -23,6 +23,23 @@ class Equipo extends Model
     {
         return $this->belongsToMany(Participante::class, 'equipo_participante')->withPivot('perfil_id');
     }
+
+    public function solicitudes()
+    {
+        return $this->hasMany(SolicitudEquipo::class);
+    }
+
+    public function solicitudesPendientes()
+    {
+        return $this->hasMany(SolicitudEquipo::class)->where('estado', 'pendiente');
+    }
+
+    public function getLider()
+    {
+        return $this->participantes()
+            ->wherePivot('perfil_id', 3)
+            ->first();
+    }
     public function removerIntegrante($participanteId)
     {
         $idPerfilLider = 3;

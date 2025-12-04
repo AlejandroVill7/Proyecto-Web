@@ -26,6 +26,7 @@ use App\Http\Controllers\Participante\ParticipanteController;
 use App\Http\Controllers\Participante\PerfilController;
 use App\Http\Controllers\Participante\EquipoController as ParticipanteEquipoController;
 use App\Http\Controllers\Participante\AvanceController;
+use App\Http\Controllers\Participante\SolicitudEquipoController;
 
 // Middlewares
 use App\Http\Middleware\EnsureParticipantProfileExists;
@@ -164,6 +165,15 @@ Route::middleware(['auth', 'role:Participante'])->prefix('participante')->name('
             // Gestión de miembros por el líder
             Route::post('/equipo/agregar-miembro', 'addMember')->name('equipos.addMember');
             Route::delete('/equipo/eliminar-miembro/{id}', 'removeMember')->name('equipos.removeMember');
+        });
+
+        // Solicitudes de Unión a Equipos
+        Route::controller(SolicitudEquipoController::class)->prefix('solicitudes')->name('solicitudes.')->group(function () {
+            Route::get('/mis-solicitudes', 'misSolicitudes')->name('mis');
+            Route::get('/equipo/{equipo}', 'verSolicitudesEquipo')->name('equipo');
+            Route::post('/{equipo}/crear', 'crearSolicitud')->name('crear');
+            Route::post('/{solicitud}/aceptar', 'aceptar')->name('aceptar');
+            Route::post('/{solicitud}/rechazar', 'rechazar')->name('rechazar');
         });
 
         // Bitácora de Avances

@@ -33,6 +33,23 @@ class Participante extends Model
             ->withTimestamps();
     }
 
+    public function solicitudes()
+    {
+        return $this->hasMany(SolicitudEquipo::class);
+    }
+
+    public function solicitudesRecibidas()
+    {
+        return $this->hasMany(SolicitudEquipo::class, 'respondida_por_participante_id');
+    }
+
+    public function esLiderDe()
+    {
+        return $this->equipos()
+            ->wherePivot('perfil_id', 3)
+            ->first();
+    }
+
     public function constancias()
     {
         return $this->hasMany(Constancia::class);
