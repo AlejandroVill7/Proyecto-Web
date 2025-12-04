@@ -79,7 +79,7 @@ class DatabaseSeeder extends Seeder
             $juez->roles()->attach($rolJuez->id);
         }
 
-        // <<< NEW: Assign Jueces to Eventos >>>
+        // 
         $this->call(EventoUserSeeder::class);
 
         // Create Participantes

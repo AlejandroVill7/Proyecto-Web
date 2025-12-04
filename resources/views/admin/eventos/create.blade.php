@@ -12,10 +12,25 @@
         </div>
     </x-slot>
 
+     {{-- Preparación de datos para AlpineJS --}}
+     @php
+        $judgesData = $jueces->map(function($j) {
+            return [
+                'id' => $j->id,
+                'name' => $j->name,
+                'email' => $j->email,
+                'initial' => strtoupper(substr($j->name, 0, 1))
+            ];
+        });
+        
+        // En crear, empezamos vacíos, o con lo que se intentó enviar si hubo error
+        $currentSelection = old('jueces', []);
+    @endphp
+
     <div class="py-12 bg-gray-50 dark:bg-gray-900 min-h-screen">
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
             
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden relative">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-visible relative">
                 
                 {{-- Decoración Superior --}}
                 <div class="h-1.5 w-full bg-gradient-to-r from-green-400 to-blue-500"></div>
@@ -52,65 +67,74 @@
                             <x-input-error :messages="$errors->get('descripcion')" class="mt-2" />
                         </div>
 
-                        {{-- Asignar Jueces --}}
-                        <div>
+                         {{-- SECCIÓN DE JUECES CON BUSCADOR MULTI-SELECT --}}
+                         <div x-data="judgeSelector({{ $judgesData->toJson() }}, {{ json_encode($currentSelection) }})" class="relative">
                             <x-input-label for="jueces" value="Asignar Jueces" class="mb-2 font-bold" />
-                            @php
-                                $assigned_jueces = old('jueces', []);
-                            @endphp
-
-                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3">
-                                @foreach ($jueces as $juez)
-                                    <div>
-                                        <input type="checkbox"
-                                            id="juez-{{ $juez->id }}"
-                                            name="jueces[]"
-                                            value="{{ $juez->id }}"
-                                            class="sr-only peer"
-                                            {{ in_array($juez->id, $assigned_jueces) ? 'checked' : '' }}
-                                            aria-checked="{{ in_array($juez->id, $assigned_jueces) ? 'true' : 'false' }}" />
-
-                                        <label for="juez-{{ $juez->id }}"
-                                            tabindex="0"
-                                            class="flex items-center justify-between gap-3 p-3 rounded-xl border transition-colors
-                                                   bg-white text-gray-800 border-gray-200
-                                                   dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700
-                                                   hover:shadow-sm
-                                                   peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600
-                                                   focus:outline-none focus:ring-2 focus:ring-indigo-400">
-                                            <div class="flex items-center gap-3 min-w-0">
-                                                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-sm font-bold text-gray-700 dark:text-gray-200">
-                                                    {{ strtoupper(substr($juez->name,0,1)) }}
-                                                </div>
-                                                <div class="min-w-0">
-                                                    <div class="font-semibold text-sm truncate">{{ $juez->name }}</div>
-                                                    <div class="text-xs truncate text-gray-500 dark:text-gray-400">{{ $juez->email }}</div>
-                                                </div>
-                                            </div>
-
-                                            <div class="flex items-center gap-2 ml-2">
-                                                <span class="hidden text-xs text-gray-400 dark:text-gray-300 peer-checked:block peer-checked:text-white/90">Seleccionado</span>
-                                                <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-300 hidden peer-checked:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                                </svg>
-                                            </div>
-                                        </label>
+                            
+                            {{-- 1. Lista de Jueces Seleccionados (Visual) --}}
+                            <div class="mb-3 flex flex-wrap gap-2 min-h-[40px] p-2 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-dashed border-gray-300 dark:border-gray-600">
+                                <template x-for="juez in selectedJudgesList" :key="juez.id">
+                                    <div class="flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 pl-2 pr-1 py-1 rounded-lg shadow-sm group">
+                                        <div class="w-5 h-5 rounded-full bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 flex items-center justify-center text-[10px] font-bold" x-text="juez.initial"></div>
+                                        <span class="text-xs font-medium text-gray-700 dark:text-gray-300" x-text="juez.name"></span>
+                                        <button type="button" @click="remove(juez.id)" class="p-1 hover:bg-red-50 dark:hover:bg-red-900/30 text-gray-400 hover:text-red-500 rounded transition-colors">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                        </button>
                                     </div>
-                                @endforeach
+                                </template>
+                                <div x-show="selectedIds.length === 0" class="w-full text-center py-2">
+                                    <span class="text-xs text-gray-400 italic">No hay jueces asignados aún.</span>
+                                </div>
                             </div>
 
-                            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Selecciona uno o varios jueces.</p>
+                            {{-- 2. Input Buscador --}}
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                                </div>
+                                <input type="text" x-model="search" placeholder="Buscar juez por nombre o correo..." 
+                                       class="w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow">
+                            </div>
+
+                            {{-- 3. Dropdown de Resultados --}}
+                            <div x-show="search.length > 0 && filteredJudges.length > 0" 
+                                 class="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl shadow-xl max-h-60 overflow-y-auto"
+                                 style="display: none;"
+                                 x-transition.opacity.duration.200ms>
+                                <ul class="divide-y divide-gray-100 dark:divide-gray-700">
+                                    <template x-for="juez in filteredJudges" :key="juez.id">
+                                        <li class="px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition cursor-pointer" 
+                                            @click="add(juez.id)">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-8 h-8 rounded-full bg-indigo-50 dark:bg-indigo-900/50 flex items-center justify-center text-xs font-bold text-indigo-600 dark:text-indigo-400" x-text="juez.initial"></div>
+                                                <div>
+                                                    <div class="text-sm font-bold text-gray-800 dark:text-gray-200" x-text="juez.name"></div>
+                                                    <div class="text-xs text-gray-500 dark:text-gray-400" x-text="juez.email"></div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </template>
+                                </ul>
+                            </div>
+
+                            <div x-show="search.length > 0 && filteredJudges.length === 0" class="mt-2 p-2 text-center text-xs text-gray-500 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700">
+                                No se encontraron coincidencias.
+                            </div>
+
+                            {{-- 4. Inputs Ocultos para enviar al Backend --}}
+                            <template x-for="id in selectedIds" :key="id">
+                                <input type="hidden" name="jueces[]" :value="id">
+                            </template>
+
                             <x-input-error :messages="$errors->get('jueces')" class="mt-2" />
                         </div>
 
                         {{-- Fechas (Grid 2 Columnas) --}}
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            
                             {{-- Fecha Inicio --}}
                             <div>
                                 <x-input-label for="fecha_inicio" value="Inicio (Fecha y Hora)" class="mb-2 font-bold" />
                                 <div class="relative">
-                                    {{-- CORRECCIÓN: 'min' para evitar fechas pasadas --}}
                                     <input type="date" id="fecha_inicio" name="fecha_inicio" 
                                         value="{{ old('fecha_inicio') }}"
                                         min="{{ now()->format('Y-m-d') }}"
@@ -124,7 +148,6 @@
                             <div>
                                 <x-input-label for="fecha_fin" value="Cierre (Fecha y Hora)" class="mb-2 font-bold" />
                                 <div class="relative">
-                                    {{-- CORRECCIÓN: 'min' para evitar fechas pasadas --}}
                                     <input type="date" id="fecha_fin" name="fecha_fin" 
                                         value="{{ old('fecha_fin') }}"
                                         min="{{ now()->format('Y-m-d') }}"
@@ -148,4 +171,39 @@
             </div>
         </div>
     </div>
+
+    {{-- Script AlpineJS --}}
+    <script>
+        function judgeSelector(allJudges, initiallySelectedIds) {
+            return {
+                search: '',
+                allJudges: allJudges,
+                selectedIds: initiallySelectedIds, 
+
+                get selectedJudgesList() {
+                    return this.allJudges.filter(j => this.selectedIds.includes(j.id));
+                },
+
+                get filteredJudges() {
+                    if (this.search === '') return [];
+                    const query = this.search.toLowerCase();
+                    return this.allJudges.filter(j => 
+                        (j.name.toLowerCase().includes(query) || j.email.toLowerCase().includes(query)) &&
+                        !this.selectedIds.includes(j.id)
+                    );
+                },
+
+                add(id) {
+                    if (!this.selectedIds.includes(id)) {
+                        this.selectedIds.push(id);
+                    }
+                    this.search = ''; 
+                },
+
+                remove(id) {
+                    this.selectedIds = this.selectedIds.filter(i => i !== id);
+                }
+            }
+        }
+    </script>
 </x-app-layout>
