@@ -139,17 +139,14 @@ class EquipoController extends Controller
             return back()->with('error', 'Equipo lleno.');
         }
 
-        // Validación 3: Que no tenga solicitud pendiente para este equipo
-        $solicitudExistente = SolicitudEquipo::where('equipo_id', $equipo->id)
+        // Validación 3: Que no tenga solicitud PENDIENTE para este equipo
+        $solicitudPendiente = SolicitudEquipo::where('equipo_id', $equipo->id)
             ->where('participante_id', $participante->id)
-            ->first();
+            ->where('estado', 'pendiente')
+            ->exists();
 
-        if ($solicitudExistente) {
-            if ($solicitudExistente->estado === 'pendiente') {
-                return back()->with('error', 'Ya tienes una solicitud pendiente para este equipo.');
-            } else {
-                return back()->with('error', 'Ya existe una solicitud anterior para este equipo.');
-            }
+        if ($solicitudPendiente) {
+            return back()->with('error', 'Ya tienes una solicitud pendiente para este equipo. Espera a que el líder responda.');
         }
 
         // Redirigir al método de crear solicitud
