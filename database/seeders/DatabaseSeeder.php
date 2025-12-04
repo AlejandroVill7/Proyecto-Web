@@ -81,6 +81,7 @@ class DatabaseSeeder extends Seeder
 
         // 
         $this->call(EventoUserSeeder::class);
+        $this->call(UsuariosTestSeeder::class);
 
         // Create Participantes
         $participantes = User::factory(50)->create()->each(function ($user) use ($rolParticipante, $carreras) {
