@@ -54,6 +54,9 @@ return [
                     'verify_peer' => false,
                     'verify_peer_name' => false,
                 ],
+                'socket' => [
+                    'bindto' => '0.0.0.0:0',
+                ],
             ],
         ],
 
